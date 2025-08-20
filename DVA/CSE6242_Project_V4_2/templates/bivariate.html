@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .center_div{
+            text-align: center;
+        }
+    </style>
+    <script src="../static/js/bivariate.js"></script>
+    <div id="pagetitle" style="background-color: rgb(114, 177, 233); text-align: center; margin: -20px;">
+        <h2 style="padding-top: 20px; padding-bottom: 20px;">Bivariate Plots</h2>
+    </div>
+    <table border="1" width="100%" height="550px" style="margin-top: -20px;">
+        <!--<tr height="1%">
+            <th id="pagetitle" colspan="2">
+                <h2>Bivariate Plots</h2>
+            </th>
+        </tr>-->
+        <tr height="10%">
+            <th width="50%" style="background-color: aquamarine;">
+                <div id="hist_dates_a" style="max-height: fit-content; text-align: center;">
+                    <h3>Data Lookup For GBM</h3>
+                    <!--From Date: <input type="date" id="fromdate" name="fromdate">
+                    To Date: <input type="date" id="todate" name="todate">
+                    <button id="createchart">Submit</button>-->
+                    <table width="100%" border="0">
+                        <tr>
+                            <td style="text-align: right;" width="33%">
+                                From Date: <input type="date" id="fromdate_a" name="fromdate_a" max="2023-03-31" required>
+                            </td>
+                            <td style="text-align: center;" width="33%">
+                                To Date: <input type="date" id="todate_a" name="todate_a" max="2023-03-31" required>
+                            </td>
+                            
+                            <td style="text-align: center;" width="33%">
+                                <button id="createchart" onclick="createCharts(0, 'leftpane', 'hist_data_a', 'a');">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </th>
+            <th width="50%" style="background-color: rgb(234, 255, 127);">
+                <div id="hist_dates_b" style="max-height: fit-content; text-align: center;">
+                    <h3>Data Lookup For RNN</h3>
+                    <!--From Date: <input type="date" id="fromdate" name="fromdate">
+                    To Date: <input type="date" id="todate" name="todate">
+                    <button id="createchart">Submit</button>-->
+                    <table width="100%" border="0">
+                        <tr>
+                            <td class="center_div" width="20%">
+                                Feature A
+                                <select id="select_rnn_a">
+
+                                </select>
+                            </td>
+                            <td class="center_div" width="20%">
+                                From Date: <input type="date" id="fromdate_b" name="fromdate_b" max="2023-03-31" required>
+                            </td>
+                            <td class="center_div" width="20%">
+                                To Date: <input type="date" id="todate_b" name="todate_b" max="2023-03-31" required>
+                            </td>
+                            <td class="center_div" width="20%">
+                                Feature B
+                                <select id="select_rnn_b">
+
+                                </select>
+                            </td>
+                            <td class="center_div" width="20%">
+                                <button id="createchart" onclick="createCharts(0, 'rightpane', 'hist_data_b', 'b');">Submit</button>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </div>
+            </th>
+        </tr>
+        <tr>
+            <td width="50%" id="leftpane">
+                <div id="hist_data_a"></div>
+            </td>
+            <td width="50%" id="rightpane">
+                <div id="hist_data_b"></div>
+            </td>
+        </tr>
+    </table>
+    
+<script>
+    comp = false;
+    
+    createCharts(1, 'leftpane', 'hist_data_a', 'a');
+    createCharts(1, 'rightpane', 'hist_data_b', 'b');
+    /*
+    createCharts(1, 'leftpane', 'hist_data_a', 'a');
+    createCharts(1, 'rightpane', 'hist_data_b', 'b');
+    /*createCharts(1, 'leftpane', 'hist_data_a', 'a', function(){
+        //createCharts(1, 'rightpane', 'hist_data_b', 'b');
+        comp = createCharts(1, 'leftpane', 'hist_data_a', 'a');
+    });
+    if(comp){
+        createCharts(1, 'rightpane', 'hist_data_b', 'b');
+    }*/
+//    createCharts(1, 'rightpane', 'hist_data_b', 'b');
+    //createBivariateChart("leftpane", "hist_data_a");
+    //createBivariateChart("rightpane", "hist_data_b");
+    /*var left_chart = new BivariateClass("leftpane", "hist_data_a");
+    left_chart.createBivariateChart();
+    var right_chart = new BivariateClass("rightpane", "hist_data_b");
+    right_chart.createBivariateChart();
+    
+   
+    var div_height = document.getElementById('leftpane').offsetHeight    //d3.select('#leftpane').attr('width')
+    var div_width = document.getElementById('leftpane').offsetWidth    //d3.select('#leftpane').attr('width')
+    console.log("div_width = ", div_width)
+    var margin = {top: 10, right: 120, bottom: 30, left: 30}, width = div_width - margin.left - margin.right, height = div_height - margin.top - margin.bottom;
+    var svg = d3.select("#hist_data_a").append("svg").attr('width', div_width).attr('height', div_height)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    pane_a = "../static/stockjson.json"
+    console.log(d3)
+    var tooltip = d3.tip().attr("id", "tooltip")
+    svg.call(tooltip)
+    function getCharts(reload){
+    console.log("reload = ", reload)
+
+    // Remove previous lines and x-axis ranges
+    svg.select('#linechart').remove()
+    svg.select('#x-axis-a').remove()
+
+    d3.json(pane_a, function(d){
+
+    }).then(function(data){
+        var parseTime = d3.timeParse("%Y-%m-%d")
+        var formatTime = d3.timeFormat("%e %b %Y")
+        con_data = []
+        data.forEach(d => {
+            d["DATE"] = parseTime(d["DATE"])
+            con_data.push(d)
+        })
+        data = con_data
+        mindate = d3.min(data, function(d) { return d.DATE; })
+        maxdate = d3.max(data, function(d) { return d.DATE; })
+        if(reload == 1){
+            document.getElementById('fromdate').value = parseTime(mindate)
+            document.getElementById('todate').value = parseTime(maxdate)
+        }
+        console.log("Date format = ", data)
+        fromDate = new Date(document.getElementById("fromdate").value);
+        console.log("From date = ", fromDate, "typeof = ", typeof(fromDate));
+        toDate = new Date(document.getElementById("todate").value);
+        console.log("To date = ", toDate, "typeof = ", typeof(fromDate));
+
+        
+
+        console.log("Max date = ", maxdate, " min date = ", mindate, " typeof = ", typeof(mindate))
+
+        dmn = reload == 0 ? [fromDate, toDate] : [mindate, maxdate]
+        var x = d3.scaleTime()
+                    .domain(dmn) //d3.extent(data, function(d) { return d.date; })
+                    .range([ margin.left, width ]);
+        var x_axis = svg.append("g").attr('id', 'x-axis-a')
+                    .attr("transform", "translate(0," + height + ")")
+                    .call(d3.axisBottom(x));
+        var xAxisLabel_a = x_axis.append("text").attr("id", "x_axis_label").attr("x", (width/2)).attr("y",margin.bottom).text("Date").style("font-size", 14).attr("fill", "black")
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+                    .domain([0, 1])
+                    .range([ height, 0 ]);
+
+        var y_axis = svg.append("g").attr("id", "y-axis-a").attr("transform", `translate(${margin.left}, 0)`).call(d3.axisLeft(y))  
+    
+        var yAxisLabel_a = y_axis.append("text").attr("id", "y_axis_label").attr("transform", "rotate(-90)")
+                  .attr("y", -margin.left-margin.top)
+                  .attr("x",(-(height - margin.top - margin.bottom )/2))
+                  .attr("dy", "1em")
+                  .style("text-anchor", "end").text("Index price")
+                  .style("font-size", 14).attr("fill", "black")
+
+        // Legend circle
+        var circle_g = svg.append("g").attr("id", "legend-circle")
+        
+        // Create linechart
+        index_g = svg.append("g").attr("id", "linechart")
+
+        // Create linechart for each data
+        var colorScheme = d3.scaleOrdinal(d3.schemeCategory10)
+        var json_keys = Object.keys(data[0])
+        console.log("data = ", data)
+        filteredData = data.filter(d => d.DATE >= fromDate && d.DATE <= toDate)
+        console.log("Filtered data = ", filteredData)
+        i = 0
+        json_keys.forEach(js => {
+            
+            //console.log(js)
+            if(js != "DATE"){
+                index_g.append("path").attr('id', js)//.attr("class", function(d){return d3.select("#index").node().value})
+                .datum(reload == 1 ? data : filteredData)
+                .attr("fill", "none")
+                .attr("stroke", function(d, j) { return colorScheme(i) })
+                .attr("stroke-width", 1.5)
+                .attr("d", d3.line()
+                .x(function(d) { return x(d.DATE) })
+                .y(function(d) { return y(d[js]) })
+                )
+                
+                // Create legend
+                legend_circle = circle_g.selectAll('circle_'+js).data(data).enter().append('circle').attr('id', 'circle_'+js)
+                                .attr('r', 5).attr('cx', div_width - margin.right).attr('cy', margin.top + (i + 1)*20)
+                                .attr('fill', (d, j) => colorScheme(i))
+                       
+                legend_text = circle_g.selectAll('legend_'+js).data(data).enter().append('text').attr('id', 'legend_'+js)
+                                        .attr('x', div_width - margin.right + 10).attr('y', margin.top + 3 + (i + 1)*20)
+                                        .text((d, j) => js).attr('fill', (d, j) => colorScheme(i)).style('font-size', 12)
+            }
+            i += 1
+        })
+        //
+        sd = svg.select(`#linechart`)//.selectAll('path')
+        console.log("sd = ", sd)
+        sd.on('mouseover', function(d, i){
+            di = sd.selectAll('path')
+            di.on('mouseover', function(e, j){
+                console.log("e = ", j)
+                getTooltip(json_keys[1 + j], e)
+            })
+        })
+        tooltip_circle = svg.append('g').attr('id', 'tooltip-circle')
+        //
+        function getTooltip(js, data){
+            tooltip_circle.selectAll('circle').remove()
+            circle = tooltip_circle.append('circle').attr('r', 0).attr('fill', 'red').style('opacity', 0.7)
+            
+            //listeningRect = svg.append('rect').attr('width', width).attr('height', height).style('opacity', 0)
+            listeningRect = svg.select(`#${js}`)
+            listeningRect.on('mousemove', function(event){
+                    const xCord = d3.mouse(this);
+                    const bisectDate = d3.bisector(d => d.DATE).left;
+                    const x0 = x.invert(xCord[0]);
+                    const i = bisectDate(data, x0, 1);
+                    const d0 = data[i-1];
+                    const d1 = data[i];
+                    //console.log(d0, "+++", d1)
+                    const d = x0 - d0.DATE > d1.DATE - x0 ? d1 : d0;
+                    const xPos = x(d.DATE);
+                    const yPos = y(d[js]);
+                    //console.log(xPos, "===", yPos)
+                    circle.attr('cx', xPos).attr('cy', yPos).attr('r', 5);
+                    d3.select("#tooltip").style('top', `${yPos}px`).style('left', `${xPos+10}px`).style('background-color', "lightblue").html(`Date : ${formatTime(d.DATE)}<br>Price : ${d[js]}<br>Sym: ${js}`).style('opacity', 0.9)
+            })
+            listeningRect.on('mouseout', function(event){
+                console.log("mouseout")
+            })
+        }
+
+    }); // d3 json ENDS
+    
+    }   // getChart ENDS
+    getCharts(1)
+    */
+</script>
+{% endblock %}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Load d3.js -->
+        <!--<script src="https://d3js.org/d3.v4.js"></script>-->
+        <script type="text/javascript" src="../static/lib/d3.v5.min.js"></script>
+        <script type="text/javascript" src="../static/lib/d3-dsv.min.js"></script>
+        <script type="text/javascript" src="../static/lib/d3-tip.min.js"></script>
+        <script type="text/javascript" src="../static/lib/d3-legend.min.js"></script>
+        <script type="text/javascript" src="../static/lib/topojson.v2.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-selection/1.2.0/d3-selection.min.js" integrity="sha512-P/PLNIojUNrUq2g5Q3NX8epp5X6KZmNvWV2pDGU+ZiU96YlqFhIrG0pkSZ/qgruT7uJ2Ok/vFN7/7brl4Y7ipw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </head>    
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .zoom{
+            transition: 0.2s;
+        }
+        .zoom:hover{
+            transform: scale(1.1);
+            cursor: pointer;
+        }
+        .top-section{
+            text-align: center;
+            color:white;
+            margin-right: -10px;
+        }
+        /** {
+  margin:0px;
+  padding:0px;
+  box-sizing:border-box;
+  font-family:sans-serif;
+}*/
+.sidebar {
+  height: 100%;
+  width: 0;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #ffd4d4;
+  overflow-x: hidden;
+  transition: 0.5s;
+  padding-top: 60px;
+}
+
+.sidebar a {
+  padding: 8px 8px 8px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #818181;
+  display: block;
+  transition: 0.3s;
+}
+
+.sidebar a:hover {
+  color: #f1f1f1;
+}
+
+.sidebar .closebtn {
+  position: absolute;
+  top: 0;
+  right: 25px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+
+.openbtn {
+  font-size: 20px;
+  cursor: pointer;
+  background-color: #111;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+}
+
+.openbtn:hover {
+  background-color: #444;
+}
+
+#main {
+  transition: margin-left .5s;
+  padding: 16px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+  .sidebar {padding-top: 15px;}
+  .sidebar a {font-size: 18px;}
+}
+
+
+    </style>
+    <body>
+        <table width="100%" border="0">
+            <tr>
+                <td width="10%" style="vertical-align: middle; text-align: center;">
+                    
+                    <img id="menu_bar" class="toggle-btn" src="../static/images/menu_icon.png" width="30" height="30" style="cursor: pointer;" onclick="openNav()" class="openbtn">
+                    <div id="mySidebar" class="sidebar">
+                        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+                        <a href="{{ url_for('bivariate') }}">Bivariate Chart</a>
+                        <a href="{{ url_for('backtest') }}">Backtesting</a>
+                        <a href="{{ url_for('networkgraph') }}">Network Graph</a>
+                        <a href="{{ url_for('prediction') }}">Prediction</a>
+                    </div>
+                </td>
+                <td style="vertical-align: middle; text-align: right;">
+                    <img src="../static/images/gatech.png" width="80" height="80" />
+                    
+                </td>
+                <td>
+                    <h1 style="text-align: center; color: cadetblue;">Predicting S&P 500 - Data Visualization Approach (CSE6242)</h1>
+                </td>
+                <td>
+                    {% if not index %}
+                    {% block main_menu_btn %}
+                    <button id="btnmainmenu" name="btnmainmenu" style="background-color: rgb(13, 137, 161); width: 100px; height: 40px; color: white; border-radius: 20px; border-color: blue; font-weight: 700;" class="zoom" onclick="window.location.href=`{{ url_for('menupage') }}`">Main Menu</button>
+                    {% endblock %}
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+        {% block content %}
+
+        {% endblock %}
+        <div style="background-color: rgb(129, 129, 255);">
+            <!--<p style="text-align: center; color: white;">Developed By: <b>TEAM 51</b></p>
+            <!--<p id="courseid">A project for CS6242</p>
+            Team members: <p id="credits" style="text-align: center; color: white;">Rajiv, Aniket, Longhao, Umesh, Inderjeet and Amrapali</p>-->
+            <table width="100%" border="0">
+                <tr style="margin: 0px;">
+                    <td colspan="2" style="text-align: center;">
+                        <p style="text-align: center; color: white;">Developed By: <b>TEAM 51</b></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;" width="45%">
+                        <!--<p style="color: white;">Team members: </p>-->
+                        <p id="credits" style="color: white;">Team members: Aniket P Srivastava, Rajiv Kamal, Longhao Wang, Inderjeet Singh, Amrapali Shyam, and Umesh Jadhav</p>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+    <script>
+        function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  //document.getElementById("main").style.marginLeft = "250px";
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "0";
+  //document.getElementById("main").style.marginLeft= "0";
+}
+
+    </script>
+</html>

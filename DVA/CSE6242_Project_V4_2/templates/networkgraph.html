@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    /*svg {
+background-color:black;
+background-image:
+radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px;
+background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
+    }*/
+    svg{
+        background: url("../static/images/worldmap.png");
+        object-fit: cover;
+        
+    }
+    path.link {
+      fill: none;
+      stroke: #666;
+      stroke-width: 1.5px;
+    }
+    
+    circle {
+      fill: red;
+      stroke: #fff;
+      stroke: black;
+      stroke-width: 1.5px;
+    }
+    
+    text {
+      fill: #0b0202;
+      font: 14px sans-serif;
+      pointer-events: none;
+    }
+    li{
+        list-style-position: inside;
+        margin: 1.5%;
+    }
+    </style>
+    <table border="1" style="border-collapse: collapse;" width="100%">
+        <tr id="top-section" height="50%" style="background-color: rgb(189, 113, 255); background-image: linear-gradient(to right, blueviolet, skyblue); height:250px;">
+            <td width="70%" class="top-section" colspan="2" style="text-align: center;">
+                <h2>Network Graph of Stock indices</h2>
+                <p style="font-size: large;">Visualization of connection between major stock indices</p>
+                <h3><u>How it works</u></h3>
+                <ol>
+                    <li>Drag the stock index by pressing on the node</li>
+                    <li>The node sticks to the position at which it is dragged</li>
+                    <li>Double click the fixed node to free it</li>
+                    <li>The node changes its color to blue when dragged and pinned</li>
+                    <li>On release, it retains its base color</li>
+                </ol>
+                
+            </td>
+            <td style="text-align: center;" colspan="3">
+                <img src="../static/images/network_bt.png" width="250" height="250" style="border-radius: 100%; object-fit: cover;">
+            </td>
+        </tr>
+    </table>
+    <!--<div id="pagetitle" style="background-color: rgb(34,139,34); text-align: center; margin: -20px; color:white">
+        <h2 style="padding-top: 20px; padding-bottom: 20px;">Network Graph</h2>
+    </div>-->
+    <div id="network-graph"></div>
+    <script>
+    
+    d3.dsv(",", "../static/market_indices.csv", function(d) {
+      return {
+        source: d.source,
+        target: d.target,
+        value: +d.value
+      }
+    }).then(function(data) {
+    
+      var links = data;
+    
+      var nodes = {};
+    
+      // compute the distinct nodes from the links.
+      links.forEach(function(link) {
+          link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+          link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+      });
+    
+      /*var width = 1200,
+          height = 700;
+      */
+      //var width = window.innerWidth, height = document.getElementById('network-graph').style.height;
+      var width = window.innerWidth, height = 500;
+      var force = d3.forceSimulation()
+          .nodes(d3.values(nodes))
+          .force("link", d3.forceLink(links).distance(300))
+          .force('center', d3.forceCenter(width / 2, height / 2))
+          .force("x", d3.forceX())
+          .force("y", d3.forceY())
+          .force("charge", d3.forceManyBody().strength(250))
+          .alphaTarget(1)
+          .on("tick", tick);
+    
+      var svg = d3.select("#network-graph").append("svg")
+          .attr("width", width)
+          .attr("height", height);
+    
+      // add the links
+      var path = svg.append("g")
+          .selectAll("path")
+          .data(links)
+          .enter()
+          .append("path")
+          .attr("class", function(d) { return "link " + d.type; });
+    //   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    var colors =  d3.scaleOrdinal(d3.schemeCategory10);
+    console.log(colors);
+    
+    
+    //   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      // define the nodes
+      var node = svg.selectAll(".node")
+          .data(force.nodes())
+          .enter().append("g")
+          .attr("class", "node")
+          .attr("id", function(d){ return (d.name.replace(/\s+/g,'').toLowerCase());})
+          //.attr("cx", function(d) { console.log("d = ", d); return d.x + 100})
+          .on("dblclick", dblclick)
+           .call(d3.drag()
+              .on("start", dragstarted)
+              .on("drag", dragged)
+            //   .on("dblclick", dblclick)
+            //   .on("dragstart", dragstart)
+              .on("end", dragended));
+    
+    // add  node labels
+            node.append("text")
+            .attr("id", function(d){ return (d.name.replace(/\s+/g,'').toLowerCase());})
+            .attr("x", 12)
+            .attr("dy", "3.95em")
+            .text(function (d) { return d.name; });
+    
+      // add the nodes
+      node.append("circle")
+        .attr("id", function(d){ return (d.name.replace(/\s+/g,'').toLowerCase());})
+        //.attr("cx", function(d) { console.log("d = ", d); })
+        //   .attr("r", 15)
+        // .style("fill", function(d, i) {return colors(i);})
+        .attr("r", function(d) {      
+            d.weight = path.filter(function(l) {
+            return l.source.index == d.index || l.target.index == d.index
+            }).size();      
+            var minR = 10;
+            return minR + (d.weight * 1);
+                })
+        .style("fill", function (d) {
+                d.weight = path.filter(function (l) {
+                return l.source.index == d.index || l.target.index == d.index;
+                }).size();
+                if (d.weight >= 4) {return "#7a0177";}
+                 else if (d.weight >= 3 && d.weight < 4) {return "#ae017e";} 
+                 else if (d.weight >= 2 && d.weight < 3) {return "#f768a1";} 
+                 else {return "#fcc5c0";}
+            });
+    
+            
+    
+    
+      // add the curvy lines
+      function tick() {
+            node.attr('cx', function(d){
+                //console.log("node attr = ", d.x);
+                return d.x + 300;
+            }).attr('cy', function(d){
+                return d.y + 100;
+            })
+          path.attr("d", function(d) {
+              var dx = d.target.x - d.source.x,
+                  dy = d.target.y - d.source.y,
+                  dr = Math.sqrt(dx * dx + dy * dy);
+              return "M" +
+                  d.source.x + "," +
+                  d.source.y + "A" +
+                  dr + "," + dr + " 0 0,1 " +
+                  d.target.x + "," +
+                  d.target.y;
+          });
+    
+          node.attr("transform", function(d) {
+              return "translate(" + d.x + "," + d.y + ")"; 
+          });
+      };
+    
+      console.log(colors);
+    
+      path.style("stroke", function (d, i) {
+                    if (d.value == 0) { return 'gray';}
+                    else { return 'green';}
+                });
+    
+        path.style("stroke-dasharray", function (d) {if (d.value == 1) {return ("3,3"); }
+        });
+    
+    
+    
+      function dragstarted(d) {
+          if (!d3.event.active) force.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        //   d3.select(this).classed("fixed", d.fixed = true);
+      };
+    
+      function dragged(d) {
+          /*d.fx = d3.event.x;
+          d.fy = d3.event.y;*/
+          d.fx = validate(d3.event.x, 0, width)
+          d.fy = validate(d3.event.y, 0, height)
+          d3.select(this).classed("fixed", d.fixed = true);
+      };
+      
+      // To make sure nodes do not get dragged beyond svg
+      function validate(x, a, b) {
+        if (x < a) x = a;
+        if (x > b) x = b;
+        return x;
+      }
+    //   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    //   function dblclick(d) {
+    //   d3.select(this).classed("fixed", d.fixed = false);
+    // }
+    
+    function dblclick(d) {
+        d.fixed = false;
+                d.fx = null;
+                d.fy = null;
+                svg.selectAll("circle")
+                    .filter(function (c) {
+                        return c.name == d.name;
+                    })
+                    .style("fill", function (d) {
+                        d.weight = path.filter(function (l) {
+                            return l.source.index == d.index || l.target.index ==
+                                d.index;
+                        }).size();
+                        if (d.weight >= 4) {
+                            return "#225ea8";
+                        } else if (d.weight >= 2) {
+                            return "#41b6c4";
+                        } else {
+                            return "#c7e9b4";
+                        }
+                    })
+            };
+    
+    /*svg.append("text")
+                .attr("x", width - 400)
+                .attr("y", 20)
+                .attr("text-anchor", "middle")
+                .style("font-size", "12px")
+                .text("kkamal6")
+                .attr("id", "credit");*/
+    
+    //   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      function dragended(d) {
+          if (!d3.event.active) force.alphaTarget(0);
+          if (d.fixed == true) {
+            //   d.fx = d.x;
+            //   d.fy = d.y;
+              svg.selectAll("circle")
+                        .filter(function (c) {
+                            return c.name == d.name;
+                        })
+                        .style("fill", "steelblue");
+                }
+                else {
+                    d.fx = null;
+                    d.fy = null;
+                }
+            };
+    
+    
+    
+    }).catch(function(error) {
+      console.log(error);
+    });
+    
+    </script>
+    
+{% endblock %}

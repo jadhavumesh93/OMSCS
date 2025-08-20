@@ -1,0 +1,287 @@
+
+    {% extends 'base.html' %}
+    {% block content %}
+    <style>
+        .top-section{
+            text-align: center;
+            color:white;
+            margin-right: -10px;
+        }
+        .cards{
+            padding: 3%;
+        }
+        .shadow{
+            box-shadow: 0.8em 0.7em  0.25em  rgba( 0, 0, 0, 0.4 );
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+        }
+    </style>
+    
+    <table width="100%" border="0" style="border-color: rgb(189, 113, 255); border-collapse: collapse;">
+        <tr id="top-section" height="50%" style="background-color: rgb(189, 113, 255); background-image: linear-gradient(to right, purple, blue); height:350px;">
+            <td width="70%" class="top-section">
+                <h2>S&P500 analysis and prediction</h2>
+                <p style="font-size: large;">Data analytic approach for deep analysis of market indices using time-series data while unearthing the underlying influence of various macro-economic factors</p>
+            </td>
+            
+            <td style="text-align: center;" colspan="3">
+                <img src="../static/images/home2.png" width="250" height="250">
+            </td>
+        </tr>
+        <!-- Horizontal tabs -->
+        <tr>
+            <td colspan="3" style="margin-top: 0%;">
+            <table width="100%" border="1">
+            <tr>
+            <td id="bivariate_h" style="text-align: center; color: blueviolet; cursor: pointer;" width="25%" onclick="showDescription('bivariate_h')" onmouseover="changeBackgroundColor('bivariate_h')" onmouseout="resetBackgroundColor('bivariate_h')">
+                <h3>Bivariate analysis</h3>
+            </td>
+            <td id="backtesting_h" style="text-align: center; color: blueviolet; cursor: pointer;"  onclick="showDescription('backtesting_h')" width="25%" onmouseover="changeBackgroundColor('backtesting_h')" onmouseout="resetBackgroundColor('backtesting_h')">
+                <h3>Backtesting</h3>
+            </td>
+            <td id="networkgraph_h" style="text-align: center; color: blueviolet; cursor: pointer;" width="25%"  onclick="showDescription('networkgraph_h')" onmouseover="changeBackgroundColor('networkgraph_h')" onmouseout="resetBackgroundColor('networkgraph_h')">
+                <h3>Network Graph</h3>
+            </td>
+            <td id="prediction_h" style="text-align: center; color: blueviolet; cursor: pointer;" width="25%"  onclick="showDescription('prediction_h')" onmouseover="changeBackgroundColor('prediction_h')" onmouseout="resetBackgroundColor('prediction_h')">
+                <h3>S&P500 Prediction</h3>
+            </td>
+            </tr>
+            </table>
+            </td>
+        </tr>
+        <tr width="100%" style=" display: none; background-color: rgb(229, 173, 251);" id="content_h">
+            <td style="height:300px; text-align: center; color: rgb(199, 13, 13);" colspan="2">
+                <h2 id="content_header_h">
+                    Bivariate Analysis
+                </h2>
+                <p id="description_h" style="font-weight: 600;">
+                    Analyse the relationship between the features of BGM and RNN model in the form of visualization.
+                </p>
+            </td>
+        </tr>
+        <!--Vertical Cards-->
+        <!--<tr>
+            <td style="padding-right: 5%;">
+                <table width="100%" height="100%" style="padding-bottom: 30px;">
+                    <tr>
+                        <td style="text-align: center; color: blueviolet;" colspan="2">
+                            <h3>Choose a tile to know more</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: blueviolet; cursor: pointer;" class="cards shadow" width="50%" onclick="changeGuidelines('bivariate')">
+                            <h3>Bivariate analysis</h3>
+                        </td>
+                        <td style="text-align: center; color: blueviolet; cursor: pointer;" class="cards shadow" onclick="changeGuidelines('bivariate')">
+                            <h3>Backtesting</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: blueviolet; cursor: pointer;" class="cards shadow" width="50%">
+                            <h3>Network Graph</h3>
+                        </td>
+                        <td style="text-align: center; color: blueviolet; cursor: pointer;" class="cards shadow">
+                            <h3>S&P500 Prediction</h3>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="text-align: center;">
+                <div id="guidlines" style="display: none; background-color: rgb(212, 187, 236); height:90%;margin-bottom: 8%; border-radius: 10px;">
+                    <h4 id="guide-header" style="background-color:blueviolet; color: white;"></h4>
+                    <h5 id="guide-subheader-a"></h5>
+                    <ol id="guide-steps-a"></ol>
+                    <br>
+                    <h5 id="guide-subheader-b"></h5>
+                    <ol id="guide-steps-b"></ol>
+                </div>
+            </td>
+        </tr>-->
+        <tr>
+            <td style="text-align: center;" colspan="2">
+                <h4>
+                    <i><b>Disclaimer : </b></i>
+                </h4>
+                <p>
+                    This software and visualizations are made for educational purposes. Please use the recommendation on investment at your own risk. 
+                </p>
+            </td>
+        </tr>
+        <tr>
+            
+            <td style="text-align: center;" colspan="2">
+                <button id="agreeproceed" style="color: white; background-color: blueviolet; height: 60px; width: 150px; border-radius: 30px; font-weight: 700; cursor: pointer;" onclick="window.location.href=`{{ url_for('menupage') }}`">Agree and Proceed</button>
+            </td>
+        </tr>
+    </table>
+    <script>
+        var pageheight = window.innerHeight;
+        console.log("pageheight = ", pageheight)
+        
+        // For Horizontal Section
+        function changeBackgroundColor(divId){
+            /*document.getElementById(divId).style.backgroundColor = "blueviolet";
+            document.getElementById(divId).style.color = "white";*/
+            document.getElementById(divId).style.backgroundColor = "blueviolet";
+            document.getElementById(divId).style.color = "white";
+        }
+
+        function resetBackgroundColor(divId){
+            document.getElementById(divId).style.backgroundColor = "white";
+            document.getElementById(divId).style.color = "blueviolet";
+        }
+
+        function showDescription(divId){
+            document.getElementById('content_header_h').innerHTML = "";
+            document.getElementById('description_h').innerHTML = "";
+            document.getElementById('content_h').style.display = "";
+            divs = ['bivariate_h', 'backtesting_h', 'networkgraph_h', 'prediction_h']
+            document.getElementById(divId).style.backgroundClip = "blueviolet";
+            document.getElementById(divId).style.color = "white";
+            if(divId == "bivariate_h"){
+                console.log("divId = ", divId)
+                document.getElementById(divId).onmouseover = ""
+                document.getElementById(divId).onmouseout = ""
+                document.getElementById(divId).style.backgroundColor = "blueviolet"
+                document.getElementById(divId).style.color = "white";
+                /*var activeclass = document.getElementsByClassName('active')[0]
+                if(activeclass){
+                document.getElementsByClassName('active')[0].style.backgroundColor = "white";
+                document.getElementsByClassName('active')[0].style.color = "blueviolet";
+                
+                }*/
+                document.getElementById(divId).classList.add("active")
+                divs.forEach(d => {
+                    if(d != divId){
+                        console.log("d = ", d)
+                        document.getElementById(d).style.backgroundColor = "white"
+                        document.getElementById(d).style.color = "blueviolet";
+                        document.getElementById(d).onmouseover = function(){ changeBackgroundColor(d) };
+                        document.getElementById(d).onmouseout = function() { resetBackgroundColor(d) };
+                        //document.getElementById(d).classList.remove("active")
+                    }
+                });
+                document.getElementById('content_header_h').innerHTML = "Bivariate Analysis";
+                document.getElementById('description_h').innerHTML = "Analyse the relationship between the features of BGM and RNN model in the form of visualization.";
+            }
+            else if(divId == "backtesting_h"){
+                console.log("divId = ", divId)
+                document.getElementById(divId).onmouseover = ""
+                document.getElementById(divId).onmouseout = ""
+                document.getElementById(divId).style.backgroundColor = "blueviolet"
+                document.getElementById(divId).style.color = "white";
+                /*var activeclass = document.getElementsByClassName('active')[0]
+                if(activeclass){
+                document.getElementsByClassName('active')[0].style.backgroundColor = "white";
+                document.getElementsByClassName('active')[0].style.color = "blueviolet";
+                
+                }*/
+                document.getElementById(divId).classList.add("active")
+                divs.forEach(d => {
+                    if(d != divId){
+                        console.log("d = ", d)
+                        document.getElementById(d).style.backgroundColor = "white"
+                        document.getElementById(d).style.color = "blueviolet";
+                        document.getElementById(d).onmouseover = function() { changeBackgroundColor(d) };
+                        document.getElementById(d).onmouseout = function() { resetBackgroundColor(d) };
+                        //document.getElementById(divId).classList.remove("active")
+                    }
+                });
+                document.getElementById('content_header_h').innerHTML = "Backtesting Analysis";
+                document.getElementById('description_h').innerHTML = "Analyse the relationship between the features of BGM and RNN model in the form of visualization.";
+            }
+            else if(divId == "networkgraph_h"){
+                console.log("divId = ", divId)
+                document.getElementById(divId).onmouseover = ""
+                document.getElementById(divId).onmouseout = ""
+                document.getElementById(divId).style.backgroundColor = "blueviolet"
+                document.getElementById(divId).style.color = "white";
+                /*var activeclass = document.getElementsByClassName('active')[0]
+                if(activeclass){
+                document.getElementsByClassName('active')[0].style.backgroundColor = "white";
+                document.getElementsByClassName('active')[0].style.color = "blueviolet";
+                
+                }*/
+                document.getElementById(divId).classList.add("active")
+                divs.forEach(d => {
+                    if(d != divId){
+                        console.log("d = ", d)
+                        document.getElementById(d).style.backgroundColor = "white"
+                        document.getElementById(d).style.color = "blueviolet";
+                        document.getElementById(d).onmouseover = function() { changeBackgroundColor(d) };
+                        document.getElementById(d).onmouseout = function() { resetBackgroundColor(d) };
+                        //document.getElementById(divId).classList.remove("active")
+                    }
+                });
+                document.getElementById('content_header_h').innerHTML = "Network Graph visualization";
+                document.getElementById('description_h').innerHTML = "Analyse the relationship between the features of BGM and RNN model in the form of visualization.";
+            }
+            else if(divId == "prediction_h"){
+                console.log("divId = ", divId)
+                document.getElementById(divId).onmouseover = ""
+                document.getElementById(divId).onmouseout = ""
+                document.getElementById(divId).style.backgroundColor = "blueviolet"
+                document.getElementById(divId).style.color = "white";
+                /*var activeclass = document.getElementsByClassName('active')[0]
+                if(activeclass){
+                document.getElementsByClassName('active')[0].style.backgroundColor = "white";
+                document.getElementsByClassName('active')[0].style.color = "blueviolet";
+                
+                }*/
+                document.getElementById(divId).classList.add("active")
+                divs.forEach(d => {
+                    if(d != divId){
+                        console.log("d = ", d)
+                        document.getElementById(d).style.backgroundColor = "white"
+                        document.getElementById(d).style.color = "blueviolet";
+                        document.getElementById(d).onmouseover = function() {changeBackgroundColor(d)};
+                        document.getElementById(d).onmouseout = function(){ resetBackgroundColor(d)};
+                        //document.getElementById(divId).classList.remove("active")
+                    }
+                });
+                document.getElementById('content_header_h').innerHTML = "S&P500 Prediction";
+                document.getElementById('description_h').innerHTML = "Analyse the relationship between the features of BGM and RNN model in the form of visualization.";
+            }
+        }
+        // For Vertical Cards
+        /*function changeGuidelines(divId){
+            var guidlines = document.getElementById('guidlines');
+            guidlines.style.display = "block";
+            guidlines.style.borderColor = "blueviolet";
+            var guideheader = document.getElementById('guide-header');
+            //guideheader.innerHTML = "";
+            guideheader.style.padding = "20px";
+            var guidecontent_a = document.getElementById('guide-steps-a');
+            //guidesubheader_a.innerHTML = "";
+            var guidecontent_b = document.getElementById('guide-steps-b');
+            //guidecontent_b.innerHTML = "";
+            var guidesubheader_a = document.getElementById('guide-subheader-a');
+            //guidesubheader_a.innerHTML = "";
+            var guidesubheader_b = document.getElementById('guide-subheader-b');
+            //guidesubheader_b.innerHTML = "";
+            if(divId == "bivariate"){
+                guideheader.innerHTML = "Bivariate analysis";
+                // For First(left section)
+                guidesubheader_a.innerHTML = "For BGM model"
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode("Select date range using From date and To date"));
+                guidecontent_a.appendChild(li);
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode("Click on Submit button"));
+                guidecontent_a.appendChild(li);
+                
+                // For Second(right section)
+                guidesubheader_b.innerHTML = "For RNN model"
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode("Select date range using From date and To date"));
+                guidecontent_b.appendChild(li);
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode("Select the features from Feature A and Feature B for comparsion"));
+                guidecontent_b.appendChild(li);
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode("Click on Submit button"));
+                guidecontent_b.appendChild(li);
+            }
+        }*/
+    </script>
+{% endblock %}

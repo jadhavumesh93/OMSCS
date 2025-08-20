@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    td{
+        text-align: center;
+    }
+    li{
+        list-style-position: inside;
+    }
+</style>
+<script src="../static/js/backtesting2.js"></script>
+<!--<form method="POST">-->
+    <table border="0" style="border-collapse: collapse;" width="100%">
+        <tr id="top-section" height="50%" style="background-color: rgb(189, 113, 255); background-image: linear-gradient(to right, rgb(226, 43, 211), skyblue); height:250px;">
+            <td width="70%" class="top-section" colspan="2">
+                <h2>Backtesting Analysis and Visualization</h2>
+                <p style="font-size: large;">Training Performance of RF, RNN and GBM models</p>
+                <h3>How it works</h3>
+                <ol>
+                    <li>Choose Model A from left pane</li>
+                    <li>Choose Model B from right pane</li>
+                    <li>Hover over the Visualization for inspecting the actual and predicted values</li>
+                </ol>
+                
+            </td>
+            <td style="text-align: center;" colspan="3">
+                <img src="../static/images/backtest_bt.png" width="250" height="250" style="border-radius: 100%; object-fit: cover;">
+            </td>
+        </tr>
+    </table>
+    <table border="1" width="100%" height="580px" style="margin-top: 0px;">
+    <!--<tr style="background-color: rgb(205, 152, 255);"  height="10%">
+        <td colspan="2">
+            <h3>Back-Testing</h3>
+        </td>
+    </tr>-->
+    
+    <tr  height="10%">
+        <td colspan="2">
+            <h4>Choose models for backtesting</h4>
+        </td>
+    </tr>
+    <tr  height="20%">
+        <td>
+            Model A : 
+            <select id="model1" name="model1" onchange="createCharts(1, 'leftpane', 'model-chart-a', 'a', this.value)">
+                {% block modela %}
+                {% for i in models %}
+                    <option value="{{ i }}" id="{{ i }}">{{ i }}</option>
+                {% endfor %}
+                {% endblock %}
+            </select>
+        </td>
+        <td>
+            Model B : 
+            <select id="model2" name="model2" onchange="createCharts(1, 'rightpane', 'model-chart-b', 'b', this.value)">
+                {% block modelb %}
+                {% for i in models %}
+                    <option value="{{ i }}" id="{{ i }}">{{ i }}</option>
+                {% endfor %}
+                {% endblock %}
+            </select>
+        </td>
+    </tr>
+    <tr style="height:90%">
+        <td width="50%" id="leftpane">
+            <!--<input type="hidden" value="{{ dfA }}" id="hiddendata_modelA">-->
+            <div id="model-chart-a"></div>
+        </td>
+        <td width="50%" id="rightpane">
+            <!--<input type="hidden" value="{{ dfB }}" id="hiddendata_modelB">-->
+            <div id="model-chart-b"></div>
+        </td>
+    </tr>
+    <tr>
+        <td width="50%" style="text-align: center;">
+            <h4 id="rmse_leftpane"></h4>
+        </td>
+        <td width="50%" style="text-align: center;">
+            <h4 id="rmse_rightpane"></h4>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="text-align: center;">
+            <p><b>Note: - </b>All the features in data are normalised between the range of 0 and 1. Some of the charts may show the Price as 0 which tends to happen as data is normalised</p>
+        </td>
+    </tr>
+</table>
+<!--</form> -->
+<script>
+    document.getElementById('model2').value = "RNN";
+    createCharts(0, 'leftpane', 'model-chart-a', 'a', 'RF')
+    createCharts(0, 'rightpane', 'model-chart-b', 'b', 'RNN')
+</script>
+{% endblock %}

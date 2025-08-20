@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    td {
+        text-align: center;
+    }
+    .errormsg{
+        color: red;
+        display: none;
+        font-size: 10px;
+        margin-top: 5px;
+    }
+    li{
+        list-style-position: inside;
+    }
+</style>
+<script src="../static/js/prediction.js"></script>
+<table border="0" style="border-collapse: collapse;" width="100%">
+    <tr id="top-section" height="70%" style="background-color: rgb(189, 113, 255); background-image: linear-gradient(to right, rgb(254, 71, 102), orange); height:250px;">
+        <td width="70%" class="top-section" colspan="2">
+            <h2>Prediction</h2>
+            <p style="font-size: large;">Predict S&P500 using ensemble model developed using GBM, RNN and RF models and visualise the performance comparison between them over Historical data</p>
+            <table border="1" width="100%">
+            <h3>How it works</h3>
+                <tr>
+                    <td width="50%">
+                        <h4>Prediction</h4>
+                    </td>
+                    <td>
+                        <h4>Historical Data</h4>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50%">
+                        <ol>
+                            <li>Select forecast Period to get the prediction</li>
+                            <li>Hover over the Visualization to get the exact price over the period</li>
+                        </ol>
+                    </td>
+                    <td>
+                        <ol>
+                            <li>Enter voting weights for GBM, RF and RNN mmodels that influence the performance of the ensemble model</li>
+                            <li>Click on Submit button to get the Visualization</li>
+                            <li>Hover over the Visualization to get the exact price over the period</li>
+                        </ol>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td style="text-align: center; vertical-align: middle;" colspan="3">
+            <img src="../static/images/prediction_bt.png" style="margin-top: 20px;" width="350" height="350">
+        </td>
+    </tr>
+</table>
+<!--<div id="pagetitle" style="background-color: rgb(114, 177, 233); text-align: center; margin: -20px; color:white">
+    <h2 style="padding-top: 20px; padding-bottom: 20px;">Prediction</h2>
+</div>-->
+<table width="100%" height="580px" border="0">
+    
+    <tr width="100%" height="12%">
+        <td width="20%">
+            Prediction Period : <select id="prediction_period" onchange="predDateChange()">
+                <option value="7">7 Days</option>
+                <option value="15">15 Days</option>
+                <option value="30">1 Month</option>
+            </select>
+        </td>
+        <td>
+            <table width="100%" border="0"  height="100%">
+                <tr>
+                    <td width="25%">
+                        Ensemble ratio for RF : <input type="number" id="weight_rf" value="51" placeholder="%" min="0" max="100" onblur="changeExceededValue()">
+                        <p id="error_a" class="errormsg">Enter value between 0 - 100</p>
+                    </td>
+                    <td width="25%">
+                        Ensemble ratio for RNN : <input type="number" id="weight_rnn" value="47" placeholder="%" min="0" max="100" onblur="changeExceededValue()">
+                        <p id="error_b" class="errormsg">Enter value between 0 - 100</p>
+                    </td>
+                    <td width="25%">
+                        Ensemble ratio for GBM : <input type="number" id="weight_gbm" value="2" placeholder="%" min="0" max="100" onblur="changeExceededValue()">
+                        <p id="error_c" class="errormsg">Enter value between 0 - 100</p>
+                    </td>
+                    <td rowspan="2" width="25%">
+                        <button id="submitBtn" onclick="checkWeights()">Submit</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+        <table width="100%" height="100%" border="1">
+        <tr height="10%">
+            <td style="background-color:red; color: white;">
+                <h3>Prediction</h3>
+            </td>
+            <td style="background-color:orange; color: white;">
+                <h3>Historical Data</h3>
+            </td>
+        </tr>
+        <tr height="80%">
+            <td id="leftpane" width="50%">
+                <div id="model-chart-a">
+
+                </div>
+            </td>
+            <td id="rightpane" width="50%">
+                <div id="model-chart-b">
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <p><b>Note: - </b>All the features in data are normalised between the range of 0 and 1. Some of the charts may show the Price as 0 which tends to happen as data is normalised</p>
+            </td>
+        </tr>
+        </table>
+        </td>
+    </tr>
+</table>
+<script>
+    var weight_a = document.getElementById('weight_rf')
+    var weight_b = document.getElementById('weight_rnn')
+    var weight_c = document.getElementById('weight_gbm')
+    var selectedDays = document.getElementById('prediction_period')
+    
+    url = `{{ url_for('predicted') }}`
+    data = {'days' : parseInt(selectedDays.value)}
+    createCharts(1, 'leftpane', 'model-chart-a', 'a', data, url)
+    url = `{{ url_for('historicweighted') }}`
+    data = {'rf_weight' : parseFloat(weight_a.value)/100, 'rnn_weight' : parseFloat(weight_b.value)/100, 'gbm_weight' : parseFloat(weight_c.value)/100}
+    createCharts(1, 'rightpane', 'model-chart-b', 'b', data, url)
+    
+    
+    function changeExceededValue(){
+        var wa = parseFloat(weight_a.value)
+        var wb = parseFloat(weight_b.value)
+        var wc = parseFloat(weight_c.value)
+
+        var error_a = false;
+        var error_b = false;
+        var error_c = false;
+        var submitBtn = document.getElementById('submitBtn')
+        submitBtn.disabled = true;
+        if(wa<0 || wa>100){
+            //weight_a.value = 0
+            document.getElementById('error_a').style.display = "block";
+            error_a = true;
+        }
+        else{
+            document.getElementById('error_a').style.display = "none";
+            error_a = false;
+        }
+        if(wb<0 || wb>100){
+            //weight_b.value = 0
+            error_b = true;
+            document.getElementById('error_b').style.display = "block";
+        }
+        else{
+            document.getElementById('error_b').style.display = "none";
+             error_b = false;
+        }
+        if(wc<0 || wc>100){
+            //weight_c.value = 0
+            document.getElementById('error_c').style.display = "block";
+            error_c = true;
+        }
+        else{
+            document.getElementById('error_c').style.display = "none";
+            error_c = false
+        }
+        if(!(error_a || error_b || error_c)){
+            submitBtn.disabled = false;
+            
+        }
+    }
+
+    function checkWeights(){
+        sum_val = parseFloat(weight_a.value) + parseFloat(weight_b.value) + parseFloat(weight_c.value)
+        console.log("sum val = ", sum_val)
+        if(sum_val < 100 || sum_val > 100){
+            alert("Total Ensemble ratio should be 100%")
+        }
+        else{
+            /*createCharts(1, 'leftpane', 'model-chart-a', 'a', null, null)
+            
+            data = {'rf_weight' : parseFloat(weight_a.value)/100, 'rnn_weight' : parseFloat(weight_b.value)/100, 'gbm_weight' : parseFloat(weight_c.value)/100}
+            createCharts(1, 'rightpane', 'model-chart-b', 'b', data, url)*/
+            url = `{{ url_for('historicweighted') }}`
+            data = {'rf_weight' : parseFloat(weight_a.value)/100, 'rnn_weight' : parseFloat(weight_b.value)/100, 'gbm_weight' : parseFloat(weight_c.value)/100}
+            createCharts(1, 'rightpane', 'model-chart-b', 'b', data, url)
+        }
+    }
+    function predDateChange(){
+        url = `{{ url_for('predicted') }}`
+        data = {'days' : parseInt(selectedDays.value)}
+        createCharts(1, 'leftpane', 'model-chart-a', 'a', data, url)    
+    }
+</script>
+{% endblock %}

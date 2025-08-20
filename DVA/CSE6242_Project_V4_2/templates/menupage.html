@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .op_card{
+        width: 100%;
+        display: block;
+    }
+    h4{
+        color: white;
+        font-size: large;
+    }
+    .cards{
+        padding: 2%;
+        
+    }
+    .shadow{
+        box-shadow: 0.8em 0.7em  0.25em  rgba( 0, 0, 0, 0.4 );
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+    
+    
+</style>
+<table width="100%" border="0" style="background-color: azure; height: 570px; border-color: blue;">
+    <tr style="background-color: rgb(92, 173, 253);">
+        <td colspan="4">
+            <h2  style="text-align: center; color: rgb(42, 107, 109); color: white;">
+                Choose a tile to perform the action
+            </h2>
+        </td>
+    </tr>
+    <tr>
+        <td width="25%" class="cards">
+            <table style="background-color:lightsalmon;" class="shadow zoom" width="100%" onclick="window.location.href=`{{ url_for('bivariate') }}`">
+                <tr>
+                    <td>
+                        <img class="op_card" src="../static/images/bivariate.png" alt="bivariate.png" height="300">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h4 style="text-align: center;">Bivariate Plot</h4>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" class="cards">
+            <table style="background-color:indianred;" width="100%" class="shadow zoom" onclick="window.location.href=`{{ url_for('backtest') }}`">
+                <tr>
+                    <td>
+                        <img class="op_card" src="../static/images/multilinechart.png" alt="bivariate.png" height="300">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h4 style="text-align: center;">Perform Back-testing</h4>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" class="cards">
+            <table style="background-color:forestgreen;" width="100%"  class="shadow zoom" onclick="window.location.href=`{{ url_for('networkgraph') }}`">
+                <tr>
+                    <td>
+                        <img class="op_card" src="../static/images/networkgraph.png" alt="bivariate.png" height="300">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h4 style="text-align: center;">Network Graph</h4>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td width="25%" class="cards">
+            <table style="background-color: dodgerblue;" class="shadow zoom" width="100%" onclick="window.location.href=`{{ url_for('prediction') }}`">
+                <tr>
+                    <td>
+                        <img class="op_card" src="../static/images/predict.jpeg" alt="bivariate.png" height="300">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <h4 style="text-align: center;">Predict S&P500</h4>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{% endblock %}

@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% block content %}
+    <style>
+        .center_div{
+            text-align: center;
+        }
+    </style>
+    <script src="../static/js/bivariate.js"></script>
+    <table border="0" style="border-collapse: collapse;" width="100%">
+        <tr id="top-section" height="50%" style="background-color: rgb(189, 113, 255); background-image: linear-gradient(to right, green, yellow); height:250px;">
+            <td width="70%" class="top-section" colspan="2">
+                <h2>Bivariate Analysis and Visualization</h2>
+                <p style="font-size: large;">Find out the relation between multiple features building GBM and RNN Models</p>
+                <h3>How it works</h3>
+                <table border="1" width="100%">
+                    <tr>
+                        <td width="50%">
+                            <h4>GBM</h4>
+                        </td>
+                        <td>
+                            <h4>RNN</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="50%" style="text-align: center; list-style-position: inside;">
+                            <ol>
+                                <li>Select feature from Feature dropdown</li>
+                                <li>Filter data using From date and To date</li>
+                                <li>Click on Submit button to get the Visualization</li>
+                            </ol>
+                        </td>
+                        <td style="text-align: center; list-style-position: inside;">
+                            <ol>
+                                <li>Select First feature from Feature A dropdown</li>
+                                <li>Select Second feature from Feature B dropdown</li>
+                                <li>Filter data using From date and To date</li>
+                                <li>Click on Submit button to get the Visualization</li>
+                            </ol>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="text-align: center;" colspan="3">
+                <img src="../static/images/bivariate_bt.png" width="250" height="250">
+            </td>
+        </tr>
+    </table>
+    <!--<div id="pagetitle" style="background-color: rgb(114, 177, 233); text-align: center; margin: -20px;">
+        <h2 style="padding-top: 20px; padding-bottom: 20px;">Bivariate Plots</h2>
+    </div>-->
+    <table border="1" width="100%" height="550px" style="margin-top: 0px; border-collapse: collapse;">
+        <!--<tr height="1%">
+            <th id="pagetitle" colspan="2">
+                <h2>Bivariate Plots</h2>
+            </th>
+        </tr>-->
+        <tr height="10%">
+            <th width="50%" style="color:green">
+                <div id="hist_dates_a" style="max-height: fit-content; text-align: center;">
+                    <h3>Data Lookup For GBM</h3>
+                    <!--From Date: <input type="date" id="fromdate" name="fromdate">
+                    To Date: <input type="date" id="todate" name="todate">
+                    <button id="createchart">Submit</button>-->
+                    <table width="100%" border="0">
+                        <tr>
+                            <td style="text-align: right;" width="33%">
+                                <!--From Date: <input type="date" id="fromdate_a" name="fromdate_a" min="2023-01-01" max="2023-03-31" required>-->
+                                From Date: <input type="date" value="2023-01-01" id="fromdate_a" name="fromdate_a" min="2023-01-01" max="2023-03-31">
+                            </td>
+                            <td style="text-align: center;" width="33%">
+                                To Date: <input type="date" id="todate_a" name="todate_a" min="2023-01-01" max="2023-03-31" value="2023-03-31" required>
+                            </td>
+                            
+                            <td style="text-align: center;" width="33%">
+                                <button id="createchart" onclick="createCharts(0, 'leftpane', 'hist_data_a', 'a');">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </th>
+            <th width="50%" style="color: green;">
+                <div id="hist_dates_b" style="max-height: fit-content; text-align: center;">
+                    <h3>Data Lookup For RNN</h3>
+                    <!--From Date: <input type="date" id="fromdate" name="fromdate">
+                    To Date: <input type="date" id="todate" name="todate">
+                    <button id="createchart">Submit</button>-->
+                    <table width="100%" border="0">
+                        <tr>
+                            <td class="center_div" width="20%">
+                                Feature A
+                                <select id="select_rnn_a">
+
+                                </select>
+                            </td>
+                            <td class="center_div" width="20%">
+                                From Date: <input type="date" id="fromdate_b" value="2013-11-01" name="fromdate_b" min="2013-11-01" max="2023-03-31" required>
+                            </td>
+                            <td class="center_div" width="20%">
+                                To Date: <input type="date" id="todate_b" value="2023-03-31" name="todate_b" min="2013-11-01" max="2023-03-31" required>
+                            </td>
+                            <td class="center_div" width="20%">
+                                Feature B
+                                <select id="select_rnn_b">
+
+                                </select>
+                            </td>
+                            <td class="center_div" width="20%">
+                                <button id="createchart" onclick="createCharts(0, 'rightpane', 'hist_data_b', 'b');">Submit</button>
+                            </td>
+                            
+                        </tr>
+                    </table>
+                </div>
+            </th>
+        </tr>
+        <tr height="80%">
+            <td width="50%" id="leftpane" >
+                <div id="hist_data_a"></div>
+            </td>
+            <td width="50%" id="rightpane" >
+                <div id="hist_data_b"></div>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">
+                <p><b>SVD0</b> = Singular Value Decomposition 0&nbsp;&nbsp;&nbsp;&nbsp;<b>SVD1</b> = Singular Value Decomposition 1&nbsp;&nbsp;&nbsp;&nbsp;</p>
+            </td>
+            <td style="text-align: center;">
+                <p style="font-size: 10px;"><b>DPRIME</b> (Bank Prime Loan Rate)&nbsp;&nbsp;&nbsp;&nbsp;<b>DTWEXBGS - </b>US Dollar Index Nominal&nbsp;&nbsp;&nbsp;&nbsp;<b>GVZCLS - </b>Gold ETF VIX&nbsp;&nbsp;&nbsp;&nbsp;<b>HQMCB10YRP - </b>10Y High Quality Market Corp Bond - Par&nbsp;&nbsp;&nbsp;&nbsp;<b>HQMCB10YR</b>10Y High Quality Market Corp Bond - Spot&nbsp;&nbsp;&nbsp;&nbsp;<b>OVXCLS</b>Oil ETF Vix&nbsp;&nbsp;&nbsp;&nbsp;<b>STLFSI4</b>St Louis Fed Financial Stress index&nbsp;&nbsp;&nbsp;&nbsp;<b>T5YIE - </b>5Y BreakEven Inflation&nbsp;&nbsp;&nbsp;&nbsp;<b>T10Y2Y - </b>10s2s Spread&nbsp;&nbsp;&nbsp;&nbsp;<b>TB3MS - </b>3m T-Bill Secondary Mkt&nbsp;&nbsp;&nbsp;&nbsp;<b>VIXCLS - </b>Vix Index&nbsp;&nbsp;&nbsp;&nbsp;<b>AAA - </b>Moody’s AAA Corp Bond Yields&nbsp;&nbsp;&nbsp;&nbsp;<b>DEXUSEU - </b>USDEUR Exchange&nbsp;&nbsp;&nbsp;&nbsp;</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <p><b>Note: - </b>All the features in data are normalised between the range of 0 and 1. Some of the charts may show the Price as 0 which tends to happen as data is normalised</p>
+            </td>
+        </tr>
+    </table>
+    
+<script>
+    comp = false;
+    /*document.getElementById('fromdate_a').value = "2023-01-01";
+    document.getElementById('fromdate_a').defaultValue = "2023-01-01";*/
+    
+    createCharts(1, 'leftpane', 'hist_data_a', 'a');
+    createCharts(1, 'rightpane', 'hist_data_b', 'b');
+
+    
+    /*
+    var div_height_left = document.getElementById('leftpane').offsetHeight    //d3.select('#leftpane').attr('width')
+    var div_width_left = document.getElementById('leftpane').offsetWidth 
+    var div_height_right = document.getElementById('rightpane').offsetHeight    //d3.select('#leftpane').attr('width')
+    var div_width_right = document.getElementById('rightpane').offsetWidth  
+    
+    // Define margins
+    var margin_left = {top: 10, right: 120, bottom: 30, left: 30}, width_left = div_width_left - margin_left.left - margin_left.right, height_left = div_height_left - margin_left.top - margin_left.bottom;
+    var svg_left = d3.select(`#hist_data_a`).append("svg").attr('width', div_width_left).attr('height', div_height_left)
+                .append("g")
+                .attr("transform", "translate(" + margin_left.left + "," + margin_left.top + ")");
+    
+    var margin_right = {top: 10, right: 120, bottom: 30, left: 30}, width_right = div_width_right - margin_right.left - margin_right.right, height_right = div_height_right - margin_right.top - margin_right.bottom;
+    var svg_right = d3.select(`#hist_data_b`).append("svg").attr('width', div_width_right).attr('height', div_height_right)
+                .append("g")
+                .attr("transform", "translate(" + margin_right.left + "," + margin_right.top + ")");
+
+    // Define Dataset
+    var tooltip_a = d3.tip().attr("id", `tooltip_a`)
+    svg_left.call(tooltip_a)
+    data_left = "../static/bivariate_GBM.csv"
+    data_right = "../static/sp500_with_features.csv"
+    
+    // Remove before rendering again
+    svg_left.select(`#linechart_left`).remove()
+    svg_right.select(`#linechart_right`).remove()
+    
+    svg_left.select(`#x-axis-left`).remove()
+    svg_right.select(`#x-axis-right`).remove()
+    var parseTime = d3.timeParse("%Y-%m-%d")
+    var formatTime = d3.timeFormat("%e %b %Y")
+    */
+    //
+</script>
+{% endblock %}
