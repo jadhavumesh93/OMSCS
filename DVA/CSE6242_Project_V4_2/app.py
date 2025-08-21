@@ -276,3 +276,4 @@ def getFilePath(stock_name):
 
 if __name__ == "__main__":
     app.run(debug=False)
+    app.run("0.0.0.0", 5000)
