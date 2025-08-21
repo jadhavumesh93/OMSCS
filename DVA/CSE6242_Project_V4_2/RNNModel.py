@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np
 import datetime
 from sklearn.preprocessing import MinMaxScaler
-import torch
-import torch.nn as nn
+#import torch
+#import torch.nn as nn
 
 class RNNModel:
     def __init__(self) -> None:
